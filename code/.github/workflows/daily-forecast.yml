@@ -1,0 +1,54 @@
+name: 每日赛事预测日报
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # UTC 00:00 = 北京 08:00
+    - cron: '0 12 * * *'  # UTC 12:00 = 北京 20:00
+  workflow_dispatch:
+    inputs:
+      mock:
+        description: '用 mock 样例（不调 Gemini，先验链路）'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-forecast
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 生成日报（Gemini Google Search 接地 / 或 mock）
+        working-directory: code
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ "${{ inputs.mock }}" = "true" ]; then
+            python3 generate_report.py --model gemini-2.5-pro --mock-data --mock-llm --no-open
+          else
+            python3 generate_report.py --model gemini-2.5-pro --no-mock-data --no-open
+          fi
+
+      - name: 同步到仓库根 + 刷新首页
+        run: python3 code/publish_site.py --site-dir .
+
+      - name: 提交并推送
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "自动更新日报 $(date -u +%Y-%m-%d)" || echo "无新改动，跳过推送"
+          git push

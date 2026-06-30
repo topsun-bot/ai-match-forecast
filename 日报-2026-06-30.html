@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>全球智库AI赛事预测日报 · 2026-06-30</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: #060d1f; color: #e6edf7; line-height: 1.7; padding: 40px 20px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .masthead {
+    border: 1px solid #c9a96e; border-left: 6px solid #c9a96e;
+    background: linear-gradient(135deg, #0a2540, #102b4a);
+    padding: 28px 32px; margin-bottom: 24px; border-radius: 6px;
+  }
+  .masthead .brand { color: #c9a96e; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; }
+  .masthead h1 { font-size: 30px; margin: 6px 0 10px; font-weight: 700; }
+  .masthead .sub { color: #8ba3c7; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .masthead .sub b { color: #c9a96e; }
+  .match-card {
+    background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px;
+    padding: 26px 28px; margin-bottom: 24px;
+  }
+  .match-meta { color: #8ba3c7; font-size: 12px; margin-bottom: 14px; letter-spacing: 1px; }
+  .score-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .team { font-size: 22px; font-weight: 600; flex: 1; }
+  .team.home { text-align: right; }
+  .team.away { text-align: left; }
+  .score { font-size: 48px; font-weight: 800; color: #c9a96e; letter-spacing: 2px; }
+  .form { display: inline-block; margin: 0 8px; vertical-align: middle; }
+  .form i { font-style: normal; display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 4px; font-size: 11px; margin: 0 2px; font-weight: 700; }
+  .f-w { background: #1f7a3a; color: #fff; }
+  .f-d { background: #5a5a5a; color: #fff; }
+  .f-l { background: #a83232; color: #fff; }
+  .confidence { display: flex; align-items: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+  .conf-label { color: #8ba3c7; font-size: 12px; white-space: nowrap; }
+  .bar { flex: 1; min-width: 120px; height: 8px; background: #1c3358; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, #c9a96e, #e6c98a); }
+  .conf-val { color: #c9a96e; font-weight: 700; }
+  .winner { color: #e6edf7; font-size: 13px; margin-left: 8px; white-space: nowrap; }
+  .block-title { color: #c9a96e; font-size: 15px; margin: 20px 0 10px; letter-spacing: 1px; border-left: 3px solid #c9a96e; padding-left: 10px; }
+  .reasoning-chain { list-style: none; counter-reset: step; padding: 0; }
+  .reasoning-chain li { position: relative; padding: 9px 0 9px 40px; font-size: 13.5px; color: #cfd9e8; border-bottom: 1px solid #16294a; }
+  .reasoning-chain li:last-child { border-bottom: none; }
+  .reasoning-chain li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 9px; width: 28px; height: 28px; line-height: 28px; text-align: center; background: #13293f; border: 1px solid #c9a96e; color: #c9a96e; border-radius: 50%; font-size: 12px; font-weight: 700; }
+  .logic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 18px 0; }
+  .logic-box { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .logic-box.gold { border-color: #c9a96e; background: #13293f; }
+  .logic-box h4 { color: #c9a96e; font-size: 13px; margin-bottom: 6px; }
+  .logic-box p { font-size: 13px; color: #cfd9e8; }
+  .data-table { background: #0c2038; border: 1px solid #1c3358; border-radius: 8px; padding: 4px 16px; margin: 16px 0; }
+  .drow { display: grid; grid-template-columns: 130px 1fr 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #16294a; font-size: 13px; }
+  .drow:last-child { border-bottom: none; }
+  .dl { color: #8ba3c7; }
+  .dv.home { text-align: right; color: #e6edf7; }
+  .dv.away { text-align: left; color: #e6edf7; }
+  .pundits-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .pundit-card { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .pundit-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .pundit-name { font-weight: 700; font-size: 14px; }
+  .pundit-lean { font-size: 11px; color: #060d1f; background: #c9a96e; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .pundit-outlet { color: #8ba3c7; font-size: 11px; margin-bottom: 8px; }
+  .pundit-take { font-size: 12.5px; color: #cfd9e8; }
+  .grounding { background: #0a1b33; border: 1px solid #1c3358; border-left: 4px solid #c9a96e; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; }
+  .grounding-title { color: #c9a96e; font-size: 12px; letter-spacing: 2px; margin-bottom: 8px; }
+  .grounding-list { list-style: none; columns: 2; column-gap: 24px; }
+  .grounding-list li { font-size: 12px; margin-bottom: 4px; break-inside: avoid; }
+  .grounding-list a { color: #8ba3c7; text-decoration: none; }
+  .grounding-list a:hover { color: #c9a96e; text-decoration: underline; }
+  .pipeline { display: flex; align-items: stretch; gap: 10px; margin-bottom: 24px; }
+  .pipe-stage { flex: 1; background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px; padding: 16px 18px; position: relative; }
+  .pipe-stage.gold { border-color: #c9a96e; background: #13293f; }
+  .pipe-num { position: absolute; top: 8px; right: 14px; color: #c9a96e; font-size: 22px; font-weight: 800; opacity: 0.5; }
+  .pipe-title { color: #8ba3c7; font-size: 12px; letter-spacing: 2px; margin-bottom: 6px; }
+  .pipe-val { font-size: 17px; font-weight: 700; color: #e6edf7; }
+  .pipe-stage.gold .pipe-val { color: #c9a96e; }
+  .pipe-sub { color: #5f7aa0; font-size: 11px; margin-top: 4px; }
+  .pipe-arrow { display: flex; align-items: center; color: #c9a96e; font-size: 22px; font-weight: 700; }
+  #pager { display: flex; justify-content: center; gap: 8px; margin: 24px 0; flex-wrap: wrap; }
+  #pager button { background: #0a1b33; border: 1px solid #1c3358; color: #cfd9e8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  #pager button:hover:not(:disabled) { border-color: #c9a96e; color: #c9a96e; }
+  #pager button.active { background: #c9a96e; color: #060d1f; border-color: #c9a96e; font-weight: 700; }
+  #pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid #1c3358; color: #5f7aa0; font-size: 11px; line-height: 1.9; }
+  @media (max-width: 1023px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr; }
+    .grounding-list { columns: 1; }
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); justify-content: center; }
+    .score { font-size: 36px; }
+    .team { font-size: 18px; }
+    .drow { grid-template-columns: 100px 1fr 1fr; }
+    body { padding: 20px 12px; }
+    .masthead { padding: 20px; }
+    .match-card { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">Global Think Tank · AI Match Forecast</div>
+    <h1>全球智库AI赛事预测日报</h1>
+    <div class="sub">
+      <span>日期：<b>2026-06-30</b></span>
+      <span>第 20260630 期</span>
+      <span>决策模型：<b>Google Gemini 2.5 Pro</b></span>
+      <span>2026 世界杯 · 数据 → 推理 → 决策</span>
+    </div>
+  </header>
+  
+  <div class="pipeline">
+    <div class="pipe-stage">
+      <div class="pipe-num">①</div>
+      <div class="pipe-title">数据源</div>
+      <div class="pipe-val">Football-Data 免费档</div>
+      <div class="pipe-sub">Gemini Google Search 实时接地</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage">
+      <div class="pipe-num">②</div>
+      <div class="pipe-title">大模型决策</div>
+      <div class="pipe-val">Google Gemini 2.5 Pro</div>
+      <div class="pipe-sub">推理 + 球评综合</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage gold">
+      <div class="pipe-num">③</div>
+      <div class="pipe-title">预测结果</div>
+      <div class="pipe-val">3 场预测</div>
+      <div class="pipe-sub">见下方详细报告</div>
+    </div>
+  </div>
+
+  <div class="grounding"><div class="grounding-title">数据来源 · Gemini Google Search 实时接地</div><ul class="grounding-list"><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH8RHISnbf4sDfKBEBvNxYPdU6cV2XaGRigwUvbuWd12gE0PxzwVPJGUiKg-IONU0M4u_DE4RlZveTBKL1meR079jN-4Romsl7rWtSuUbKADWjriYVGwTkYgDl_BMpFaBmCI3D2SgyJGcPf1joC6H5x06F0x2s2H-RNpLLloQHt_MTnKIx3IcQ=" target="_blank" rel="noopener">oddsscanner.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEw8dUFgmZ-yYlX4D5NVzpMUZjfPtIPpaYx8pAehu6qvjeRRvkO9miI8b4QeZbMV40TH1xDXIu5DolC7Zan2H555tqzzZ7Crs_iN3oiHFd3NLSXBjGw0HRgR4fh3HOAOlUHPHUBAQe8CeBPEEWP9ucRkJ-45Gd6QVjvoYIKIp6s_Qlbs_NvTTmIiWcHM2JBTidcs7z-ViJGROSt4UrVzqxOUBmGWT1HUUvwuX9z567nwFFcJv0Jq4CuE3iltpKrKEZ_pFUApv8qIo1GtXDcvcnym--4MGYqlxvu6uM=" target="_blank" rel="noopener">thehindu.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFPZFdq5BhzgkFTmgMMAr87xCkc-dbeWbEEXdfeBKnPywMMtL6PzWmjIDiB_mLZew7jf4VbzC_b7SKvTXQcTyZFQfqSvwjfrJPxUkdjaJT7OdUSIwScsEbYjfp3zVtpQNm1lEmV7iOI1mpXFp0TWjCvtZybDfn0lCse0qh23ENVh8PFo2yqO5ahSEMRx0O8gHG1LVHHhu7E6fbfkXMkGVv7BwWy8QHenfzllA5q" target="_blank" rel="noopener">totalfootballanalysis.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGkRveTG_3PTYPIeA96H1RWoxksk9fZ_kOMwju7kErqRYCM1_7luheKjZtkQGoH0bmPm0wyYoVOABdN2BQ2hhicQ_WB7wsqICGMMeCOwWbbZCA-QLQrAfHxYhZL_Dg2OcCPHZsjYkK-oK7G3pVdc4I6I39bACpazzrFvIe160ECimPcfyQnC6QDw-_t_LXpPfmq_kFq9YGG81d9vITQ3mBjicGkSeLUo-l9pnpwaHVUyDB-zTXTf-rbnQnNfmjN153cR_FczlTbNpqi_UqHhrrjwg==" target="_blank" rel="noopener">rotowire.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFGJfRcXZX9oXM9oFcgcWdl-ZZgpkk5oHJES-lH9-dkJ3Y2cyeKBP-7ll-zs2OriUYqBVuNBrNB2VS-oQe9EvFD-MyEQn4FyvIQJl_UoWGCZQNnwbESkAsd4YtSwWhg9df1eJFNCRhBz23PXHN-mMAFStuxA1WnzvA5-vI9Sz7xHujDTVZJVwAcWXQ1kH5oPmemzUeBq44n" target="_blank" rel="noopener">sportskeeda.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1MdnFtHmZcGa0hM7dxO3DwA1HSd4QzQA12M1GO6THutZT_U6biAKIA_zyWxTzwata3DK7yiI8YVH0s9LBt2JPHtCpT3e8jtnBqjJJT6Sm8_dvA0M9vGoncxIuoXsPuCNwFCwW1rpoeAIXoW2hoS_bYbspeEse_i5z9NmjQ7OoLZzPKtBJfYxDzEzc" target="_blank" rel="noopener">goal.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrQWzxvc9ZCH4PLT3LLRWLf0EuAyiVIoWDCU99y7_JpIGpn-55mrD9PIhKRjh-MdGRsdU63Wsbb_OaJVpvwEJlyJeduxS9iWv3CT8QwDnNdAosK0xEiUzyUKopANpmxvRkC06SUXDvEG8m1SkGJYy8PYGHQhgKFWprEA7vNuHr-NV7IqxKLmoVeZPnsGndW0SCWeM=" target="_blank" rel="noopener">si.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF3ASsUehpO8DO0yXgnmEdl9sACX4VnHLdzvYb7Bxlh708VDfsNEiVk_xRBkHbsPBsmGDxOmw30bmE7EaRVUxJZAZaf6nUuMNo6aO3zW8B_8R_O1wpyvwUICBh5BmPeZM1p3R4BFmsjgmlNKi6tSaW3DUMYZT-REm0KUN4P_fSFqavC6hc9BtgnViS8f6uoLhYr085CeuzMmSnIo-0=" target="_blank" rel="noopener">whoscored.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGkizSGP9-6x2b1pimOMs5D0XCFUKXiwkxvbq03zzBxO4j5pxhm6mh_9K3RFSfzJCETvH_zafUDt2FjTrykytownwLgc7zzGtL14mWv-nvMRhZ3i8OLR4TpPBRQUeIkBURuBU8p6vcYmziMgo6dIGC34wofluonGuslIMb0hHRD4Pqd2XSkdx98yyZOx2VhLS8laQx5M3frPuixD3zg0FtgbS_7qjuM" target="_blank" rel="noopener">totalfootballanalysis.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHfpFsatJt-EARfxj3fbhKP2IdIwuj2bE-hGfaxhwyeFy3iGfsrdd4lQf6PPy-glskE68Ij4dIySUE4ZUakVu7bk9xM-ZvgfUHDyGjCk95DiArAg0CJhUQsFmT6yDGMTNDWhutzAUJEnOFJRx0DQVYd8BufE5_iSCgg7xW7CfRpxn3w5Z7sCdxWrVyvyBkkVp8F4yR-" target="_blank" rel="noopener">si.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFbsoOl5pc4SzmzhFJow64ho72uYNOLTx3J8pnlAdMCV-M4QYJz3H77bd8lJOXmD8Ke6Khc-JG6WkQMd2Zo4TaUxT5bBDN2cdQCMUkaVRhG8vHr25OXF0uDRdNWI8K9Bq8xvoWQgZYwiZESFPJO4CB8QAj1afNQHJWdC6qK2-k7mI55Qyqhj3V6vYIcJ32M-Iprz-dYUzmy4Xgsw_wxi1WAVqvoknFH" target="_blank" rel="noopener">goal.com</a></li><li><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFeAYbQAY9gs-1-r6fgnlZUX8KdFs9mJpDZjKqrzGc5_EXu908Hrq6FTukzeW4GKayEIUEWjvAhTQQSdsvQ4j8j1KTiJvvh27D0FAHadORcUFyYXRZqNmWZ2pD4STqeekK8Iw2vuBdaws_o_Lk4AzXq3ROq-UuPKha-33fKHPsO6V8GaOQgIPG26TVc-UepbjliPPgmQxTvwM3PQcMuvI4l_oaptypACFkgJmCmNFSGdA==" target="_blank" rel="noopener">rotowire.com</a></li></ul></div>
+  <div id="matches">
+  <section class="match-card">
+    <div class="match-meta">2026年FIFA世界杯 · 32强赛 · 达拉斯体育场，达拉斯 · 开球 12:00</div>
+    <div class="score-row">
+      <div class="team home">科特迪瓦</div>
+      <div class="score">1 : 2</div>
+      <div class="team away">挪威</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:75%"></div></div>
+      <span class="conf-val">75%</span>
+      <span class="winner">倾向：客队胜</span>
+    </div>
+    <h3 class="block-title">推理过程</h3>
+    <ol class="reasoning-chain"><li>第1步：挪威在小组赛末轮对阵法国时轮休了包括哈兰德和厄德高在内的多名主力，为本场淘汰赛留力，体能和状态上占据优势。</li><li>第2步：挪威拥有世界级前锋哈兰德，他在本届杯赛中仅出场2次就打入4球，其个人能力是决定比赛走向的关键因素。</li><li>第3步：科特迪瓦首次进入世界杯淘汰赛，历史性突破可能会带来心理压力，而挪威则希望追平1998年进入16强的历史最佳战绩，动力十足。</li><li>第4步：科特迪瓦的防守是其优势，在预选赛和小组赛中表现稳固，但面对哈兰德和厄德高领衔的挪威攻击线将是巨大考验。</li><li>第5步：这是两队首次在国际大赛中相遇，遭遇战的偶然性较大，但挪威队的球星效应和整体实力稍占上风。</li></ol>
+    
+    <h3 class="block-title">球评观点</h3><div class="pundits-grid">
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">The Hindu</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">挪威为本场比赛战略性地轮休了主力，这可能是决定性的，他们体能充沛的球星将面对科特迪瓦的身体对抗。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">RotoWire</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">这是一场胜负难料的比赛，挪威拥有更强的攻击力，但科特迪瓦的坚韧和反击能力不容小觑。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Total Football Analysis</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">挪威是更值得看好的一方，哈兰德在小组赛中已入4球，展现了强大的火力。</p>
+      </div></div>
+  </section>
+
+
+  <section class="match-card">
+    <div class="match-meta">2026年FIFA世界杯 · 32强赛 · 纽约/新泽西体育场，东卢瑟福 · 开球 17:00</div>
+    <div class="score-row">
+      <div class="team home">法国</div>
+      <div class="score">3 : 0</div>
+      <div class="team away">瑞典</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:95%"></div></div>
+      <span class="conf-val">95%</span>
+      <span class="winner">倾向：主队胜</span>
+    </div>
+    <h3 class="block-title">推理过程</h3>
+    <ol class="reasoning-chain"><li>第1步：法国队在小组赛中三战全胜，打入10球仅失2球，是仅有的三支小组赛全胜球队之一，展现了强大的统治力。</li><li>第2步：法国队攻击线人才济济，姆巴佩和登贝莱在小组赛中均已打入4球，攻击点丰富且状态火热。</li><li>第3步：瑞典队作为成绩最好的小组第三之一惊险晋级，小组赛表现起伏不定，曾以1-5惨败于荷兰，防线存在严重漏洞。</li><li>第4步：瑞典后防核心希恩（Isak Hien）因伤将缺席本届世界杯剩余所有比赛，这对他们本已不稳的防线是雪上加霜。</li><li>第5步：历史交锋战绩上法国也占优，在最近17次交手中仅输掉2次。</li></ol>
+    
+    <h3 class="block-title">球评观点</h3><div class="pundits-grid">
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Sports Illustrated</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">在淘汰赛阶段，很难有人能忽视这支星光熠熠的法国队，他们有望轻松进入16强。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Sportskeeda</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">法国队在小组赛中展示了强大的进球能力，每场至少进3球，而瑞典的防守漏洞百出，很难抵挡法国的攻势。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Goal.com</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">法国队拥有姆巴佩之外的可怕进攻深度，登贝莱的帽子戏法证明了这一点，而瑞典的防守能力在面对法国的锋线时存有严重疑问。</p>
+      </div></div>
+  </section>
+
+
+  <section class="match-card">
+    <div class="match-meta">2026年FIFA世界杯 · 32强赛 · 墨西哥城体育场，墨西哥城 · 开球 20:00</div>
+    <div class="score-row">
+      <div class="team home">墨西哥</div>
+      <div class="score">1 : 0</div>
+      <div class="team away">厄瓜多尔</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:85%"></div></div>
+      <span class="conf-val">85%</span>
+      <span class="winner">倾向：主队胜</span>
+    </div>
+    <h3 class="block-title">推理过程</h3>
+    <ol class="reasoning-chain"><li>第1步：墨西哥作为东道主之一，在小组赛三战全胜且一球未失，攻入6球，展现了完美的竞技状态。</li><li>第2步：本场比赛在墨西哥城的阿兹特克体育场进行，墨西哥在这里拥有巨大的主场优势，自1966年以来仅输过两场正式比赛。</li><li>第3步：历史交锋记录上，墨西哥对厄瓜多尔占据绝对优势，在27次交锋中取得15胜8平4负。</li><li>第4步：厄瓜多尔虽然在小组赛中爆冷击败了德国队，但整体晋级过程较为坎坷，是以成绩最好的小组第三身份出线，状态不如墨西哥稳定。</li><li>第5步：预计这将是一场进球不多的紧张比赛，墨西哥稳固的防守和主场气势将成为决定性因素。</li></ol>
+    
+    <h3 class="block-title">球评观点</h3><div class="pundits-grid">
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Sports Illustrated</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">墨西哥是小组赛阶段表现最好的球队之一，在阿兹特克球场超过8万名球迷的支持下，他们将变得更强大。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Total Football Analysis</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">墨西哥凭借完美的小组赛表现、零失球的防守记录以及在阿兹特克的主场优势，是明显的晋级热门。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Goal.com</span><span class="pundit-lean">看平局</span></div>
+        
+        <p class="pundit-take">墨西哥状态正佳，信心十足，加上主场优势，他们理应被看好，这可能是一场由一球决定胜负的紧张比赛。</p>
+      </div></div>
+  </section>
+</div>
+  <div id="pager"></div>
+  <footer class="footer">
+    免责声明：本报告由 AI 基于公开比赛数据与 Gemini Google Search 实时接地自动生成，仅作技术演示与战术分析用途，<b>不构成任何投注、投资或博彩建议</b>。球评观点为 AI 综合公开信息生成。置信度反映数据一致性强度，不保证赛果。<br>
+    生成时间：2026-06-30 06:12 · 《全球智库AI赛事预测日报》
+  </footer>
+</div>
+<script>
+(function(){
+  var cards = document.querySelectorAll('#matches .match-card');
+  if(cards.length === 0) return;
+  var page = 0;
+  function perPage(){
+    var w = window.innerWidth;
+    if(w >= 1024) return 3;
+    if(w >= 768) return 2;
+    return 1;
+  }
+  var pager = document.getElementById('pager');
+  function render(){
+    var per = perPage();
+    var total = Math.ceil(cards.length / per);
+    if(page >= total) page = total - 1;
+    if(page < 0) page = 0;
+    var start = page * per;
+    for(var i = 0; i < cards.length; i++){
+      cards[i].style.display = (i >= start && i < start + per) ? '' : 'none';
+    }
+    if(total <= 1){ pager.innerHTML = ''; return; }
+    var html = '<button class="pg-btn" data-act="prev"' + (page === 0 ? ' disabled' : '') + '>上一页</button>';
+    for(var j = 0; j < total; j++){
+      html += '<button class="pg-num' + (j === page ? ' active' : '') + '" data-page="' + j + '">' + (j + 1) + '</button>';
+    }
+    html += '<button class="pg-btn" data-act="next"' + (page === total - 1 ? ' disabled' : '') + '>下一页</button>';
+    pager.innerHTML = html;
+  }
+  pager.addEventListener('click', function(e){
+    var t = e.target;
+    if(t.tagName !== 'BUTTON') return;
+    var per = perPage();
+    var total = Math.ceil(cards.length / per);
+    if(t.dataset.act === 'prev') page = Math.max(0, page - 1);
+    else if(t.dataset.act === 'next') page = Math.min(total - 1, page + 1);
+    else if(t.dataset.page !== undefined) page = parseInt(t.dataset.page, 10);
+    render();
+    var top = document.getElementById('matches').getBoundingClientRect().top + window.pageYOffset - 20;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  });
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ page = 0; render(); }, 150); });
+  render();
+})();
+</script>
+</body>
+</html>

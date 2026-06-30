@@ -53,26 +53,31 @@ def main():
 
     date_str = datetime.date.today().isoformat() if args.date == "today" else args.date
 
-    matches = get_matches(date_str, tier=args.data_tier, mock=args.mock_data, match_id=args.match)
-    if not matches:
-        print(f"未找到比赛（date={date_str}, tier={args.data_tier}, mock_data={args.mock_data}）")
-        return
-
     router = LLMRouter(args.model, mock=args.mock_llm)
-    print(f"模型：{router.label}（{'mock' if router.mock else '真实'}模式）｜数据档：{args.data_tier}")
-    print(f"比赛 {len(matches)} 场，分析中…")
+    grounding = (not args.mock_data) and (not router.mock)
+    src = "Gemini Google Search 接地（2026 世界杯）" if grounding else "样例数据"
+    print(f"模型：{router.label}（{'mock' if router.mock else '真实'}模式）｜数据档：{args.data_tier}｜{src}")
+    print("分析中…")
 
-    results = []
-    for m in matches:
+    results, citations = analyst.analyze_daily(date_str, router, mock_data=args.mock_data)
+    if args.match:
+        results = [r for r in results if r["match"]["id"] == args.match]
+    if not results:
+        print(f"未找到比赛（date={date_str}, mock_data={args.mock_data}）。")
+        return
+    print(f"比赛 {len(results)} 场：")
+    for r in results:
+        m = r["match"]
         print(f"  · {m['home']['name']} vs {m['away']['name']}")
-        results.append({"match": m, "analysis": analyst.analyze(m, router)})
 
     os.makedirs(args.out, exist_ok=True)
     out_path = os.path.join(args.out, f"日报-{date_str}.html")
     issue = f"第 {date_str.replace('-', '')} 期"
     from config_data import DATA_TIERS
     data_tier_label = DATA_TIERS.get(args.data_tier, {}).get("label", args.data_tier)
-    html = render.render_report(date_str, issue, router.label, data_tier_label, len(results), results)
+    if grounding:
+        data_tier_label = "Gemini Google Search 实时接地"
+    html = render.render_report(date_str, issue, router.label, data_tier_label, len(results), results, citations)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"\n✓ 报告已生成：{out_path}")

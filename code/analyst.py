@@ -8,6 +8,7 @@ mock 模式下不调用模型，直接生成结构化样刊数据。
 import json
 import re
 from llm_router import LLMRouter
+from data_provider import get_matches
 
 
 PUNDIT_STYLE = [
@@ -159,3 +160,150 @@ def _mock_synthesis(home, away, ph, pa, winner, conf):
         f"综合交锋历史、近况、伤停与专家观点，AI 推算 {home['name']} {ph}-{pa} {away['name']}，"
         f"赛果倾向「{winner}」，置信度 {pct}%。该置信度仅反映数据一致性强度，不构成投注建议。"
     )
+
+
+# ===== v2：Gemini Google Search grounding 当日全量分析 =====
+
+def analyze_daily(date_str, router: LLMRouter, mock_data=False):
+    """当日全量分析主入口。返回 (results, citations)：
+    - results: [{"match":..., "analysis":...}, ...]
+    - citations: grounding 全局来源 [{"uri","title"}, ...]
+
+    真实路径：Gemini 用 google_search 搜 2026 世界杯当日赛程 + 分析（赛程也由 Gemini 搜，
+    不再依赖 API-Football）。mock_data 或 router.mock 时降级为世界杯样例 + 单场分析。
+    """
+    if mock_data or router.mock:
+        matches = get_matches(date_str, mock=True)
+        return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
+    try:
+        return _grounding_analyze_daily(date_str, router)
+    except Exception as e:
+        print(f"⚠ Gemini grounding 失败：{e}，降级世界杯样例。")
+        matches = get_matches(date_str, mock=True)
+        return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
+
+
+def _grounding_analyze_daily(date_str, router):
+    sys_prompt = (
+        "你是《全球智库AI赛事预测日报》首席分析师，读者是投资人。"
+        "你会用 Google 搜索工具实时查证 2026 年 FIFA 世界杯（美加墨）赛事信息，"
+        "确保数据真实可验证，并给出严密、可追溯的逻辑推演。严格按指定格式输出，不要任何额外说明。"
+    )
+    resp = router.chat_with_search(
+        [{"role": "system", "content": sys_prompt},
+         {"role": "user", "content": _build_daily_prompt(date_str)}],
+        temperature=0.5, max_tokens=8000,
+    )
+    results = _parse_daily(resp["text"], date_str)
+    if not results:
+        raise RuntimeError("未能从 Gemini 输出解析出任何比赛")
+    return results, resp["citations"]
+
+
+def _build_daily_prompt(date_str):
+    return (
+        f"今天是 {date_str}。请用 Google 搜索确认 2026 年 FIFA 世界杯（美国·加拿大·墨西哥）"
+        f"在这一天的正式比赛赛程，对每一场按下列模板输出分析。\n\n"
+        "规则：\n"
+        "- 每场比赛之间用单独一行 === 分隔。\n"
+        "- 严格使用【】标签，标签后紧跟内容，不要遗漏任何标签。\n"
+        "- 如今日确实无世界杯正式比赛，只输出一行：今日休赛\n"
+        "- 【推理】给 3-5 步逻辑推演，每步以「- 」开头，讲清为什么推出这个结果（近况/对阵/战术/伤停/历史/数据）。\n"
+        "- 【球评】给 1-3 条媒体或评论员观点，每条以「- 」开头，格式：媒体或评论员名：一句话核心观点。\n"
+        "- 【比分】只写 X - Y（两个整数，中间用连字符）。\n"
+        "- 【置信】0-100 的整数，反映数据一致性强度。\n\n"
+        "模板（每场严格照写，==== 之间为一场）：\n"
+        "【赛事】赛事名 · 轮次\n"
+        "【主队】队名\n"
+        "【客队】队名\n"
+        "【场地】场地，城市\n"
+        "【开球】HH:MM\n"
+        "【比分】X - Y\n"
+        "【胜负】主队胜 或 客队胜 或 平局\n"
+        "【置信】NN\n"
+        "【推理】\n"
+        "- 第1步：...\n"
+        "- 第2步：...\n"
+        "- 第3步：...\n"
+        "【球评】\n"
+        "- 媒体名：观点\n"
+        "- 媒体名：观点\n"
+        "==="
+    )
+
+
+def _parse_daily(text, date_str):
+    results = []
+    if not text or "今日休赛" in text:
+        return []
+    blocks = re.split(r"^===\s*$", text, flags=re.MULTILINE)
+    for blk in blocks:
+        f = _extract_fields(blk)
+        if not f.get("主队") or not f.get("客队"):
+            continue
+        results.append({"match": _build_match_from_fields(f, date_str),
+                        "analysis": _build_analysis_from_fields(f)})
+    return results
+
+
+def _extract_fields(blk):
+    fields = {}
+    parts = re.split(r"【([^】]+)】", blk)
+    for i in range(1, len(parts) - 1, 2):
+        fields[parts[i].strip()] = parts[i + 1].strip()
+    return fields
+
+
+def _build_match_from_fields(f, date_str):
+    home = f.get("主队", "?") or "?"
+    away = f.get("客队", "?") or "?"
+    return {
+        "id": f"wc-{_slug(home)}-{_slug(away)}",
+        "competition": f.get("赛事", "2026 FIFA 世界杯") or "2026 FIFA 世界杯",
+        "date": date_str,
+        "time": f.get("开球", ""),
+        "venue": f.get("场地", ""),
+        "home": {"name": home, "short": _short(home), "form": [], "league_pos": 0, "goals_avg": 0.0},
+        "away": {"name": away, "short": _short(away), "form": [], "league_pos": 0, "goals_avg": 0.0},
+    }
+
+
+def _build_analysis_from_fields(f):
+    ph, pa = _parse_score(f.get("比分", ""))
+    conf = _parse_conf(f.get("置信", ""))
+    chain = [ln.lstrip("-• ").strip() for ln in (f.get("推理", "") or "").splitlines() if ln.strip()]
+    pundits = []
+    for ln in (f.get("球评", "") or "").splitlines():
+        ln = ln.strip().lstrip("-• ").strip()
+        if not ln:
+            continue
+        sep = "：" if "：" in ln else (":" if ":" in ln else "")
+        if sep:
+            name, _, take = ln.partition(sep)
+            if name.strip() and take.strip():
+                pundits.append({"name": name.strip(), "outlet": "", "lean": "draw", "take": take.strip()})
+                continue
+        pundits.append({"name": "球评", "outlet": "", "lean": "draw", "take": ln})
+    return {
+        "prediction": {"home": ph, "away": pa, "confidence": conf, "winner": (f.get("胜负", "") or "").strip()},
+        "reasoning": {"chain": chain},
+        "pundits": pundits,
+    }
+
+
+def _parse_score(s):
+    m = re.search(r"(\d+)\s*[-–—]\s*(\d+)", s or "")
+    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+
+
+def _parse_conf(s):
+    m = re.search(r"(\d+)", s or "")
+    return min(1.0, int(m.group(1)) / 100.0) if m else 0.5
+
+
+def _short(name):
+    return (name[:3] or "?").upper()
+
+
+def _slug(s):
+    return re.sub(r"\W+", "", (s or ""))[:10]

@@ -39,6 +39,46 @@ class LLMRouter:
             return self._chat_gemini(messages, temperature, max_tokens, json_mode)
         raise NotImplementedError(f"未实现的 provider：{provider}")
 
+    def chat_with_search(self, messages, temperature=0.7, max_tokens=8000):
+        """Gemini + Google Search grounding：带 google_search 工具实时接地。
+        不开 json_mode（与 google_search 有冲突风险），输出自由文本 + groundingMetadata 来源。
+        返回 {"text": 模型输出, "citations": [{"uri","title"}, ...]}。
+        仅 Gemini provider 支持；mock 返回占位。
+        """
+        if self.mock:
+            return {"text": self._mock_chat(messages), "citations": []}
+        if self.cfg["provider"] != "gemini":
+            # 非 Gemini 退化：普通 chat + 空来源（其他 provider 无 grounding 工具）
+            return {"text": self.chat(messages, temperature=temperature, max_tokens=max_tokens), "citations": []}
+        contents = []
+        system_text = ""
+        for m in messages:
+            if m["role"] == "system":
+                system_text += m["content"] + "\n"
+            else:
+                contents.append({"role": "user" if m["role"] == "user" else "model", "parts": [{"text": m["content"]}]})
+        body = {
+            "contents": contents,
+            "tools": [{"google_search": {}}],
+            "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
+        }
+        if system_text:
+            body["systemInstruction"] = {"parts": [{"text": system_text}]}
+        url = f"{self.cfg['endpoint']}?key={self.api_key}"
+        req = urllib.request.Request(
+            url, data=json.dumps(body).encode("utf-8"),
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=90) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        candidate = (data.get("candidates") or [{}])[0]
+        parts = (candidate.get("content") or {}).get("parts") or []
+        text = "".join(p.get("text", "") for p in parts)
+        chunks = ((candidate.get("groundingMetadata") or {}).get("groundingChunks")) or []
+        citations = [{"uri": (c.get("web") or {}).get("uri", ""), "title": (c.get("web") or {}).get("title", "")}
+                     for c in chunks if (c.get("web") or {}).get("uri")]
+        return {"text": text, "citations": citations}
+
     def _chat_openai_compat(self, messages, temperature, max_tokens, json_mode=False):
         body = {
             "model": self.cfg["model"],

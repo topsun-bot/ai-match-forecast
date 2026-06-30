@@ -31,4 +31,4 @@ MODELS = {
     },
 }
 
-DEFAULT_MODEL = "glm-5.2"
+DEFAULT_MODEL = "gemini-2.5-pro"
