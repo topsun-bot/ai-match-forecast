@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>全球智库AI赛事预测日报 · 2026-06-29</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: #060d1f; color: #e6edf7; line-height: 1.7; padding: 40px 20px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  .masthead {
+    border: 1px solid #c9a96e; border-left: 6px solid #c9a96e;
+    background: linear-gradient(135deg, #0a2540, #102b4a);
+    padding: 28px 32px; margin-bottom: 28px; border-radius: 6px;
+  }
+  .masthead .brand { color: #c9a96e; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; }
+  .masthead h1 { font-size: 30px; margin: 6px 0 10px; font-weight: 700; }
+  .masthead .sub { color: #8ba3c7; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .masthead .sub b { color: #c9a96e; }
+  .match-card {
+    background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px;
+    padding: 26px 28px; margin-bottom: 24px;
+  }
+  .match-meta { color: #8ba3c7; font-size: 12px; margin-bottom: 14px; letter-spacing: 1px; }
+  .score-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .team { font-size: 22px; font-weight: 600; flex: 1; }
+  .team.home { text-align: right; }
+  .team.away { text-align: left; }
+  .score { font-size: 44px; font-weight: 800; color: #c9a96e; letter-spacing: 2px; }
+  .form { display: inline-block; margin: 0 8px; vertical-align: middle; }
+  .form i { font-style: normal; display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 4px; font-size: 11px; margin: 0 2px; font-weight: 700; }
+  .f-w { background: #1f7a3a; color: #fff; }
+  .f-d { background: #5a5a5a; color: #fff; }
+  .f-l { background: #a83232; color: #fff; }
+  .confidence { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .conf-label { color: #8ba3c7; font-size: 12px; white-space: nowrap; }
+  .bar { flex: 1; height: 8px; background: #1c3358; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, #c9a96e, #e6c98a); }
+  .conf-val { color: #c9a96e; font-weight: 700; }
+  .winner { color: #e6edf7; font-size: 13px; margin-left: 8px; white-space: nowrap; }
+  .logic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 18px 0; }
+  .logic-box { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .logic-box.gold { border-color: #c9a96e; background: #13293f; }
+  .logic-box h4 { color: #c9a96e; font-size: 13px; margin-bottom: 6px; }
+  .logic-box p { font-size: 13px; color: #cfd9e8; }
+  .data-table { background: #0c2038; border: 1px solid #1c3358; border-radius: 8px; padding: 4px 16px; margin: 16px 0; }
+  .drow { display: grid; grid-template-columns: 130px 1fr 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #16294a; font-size: 13px; }
+  .drow:last-child { border-bottom: none; }
+  .dl { color: #8ba3c7; }
+  .dv.home { text-align: right; color: #e6edf7; }
+  .dv.away { text-align: left; color: #e6edf7; }
+  .pundits-title { color: #c9a96e; font-size: 14px; margin: 18px 0 10px; }
+  .pundits-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .pundit-card { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .pundit-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .pundit-name { font-weight: 700; font-size: 14px; }
+  .pundit-lean { font-size: 11px; color: #060d1f; background: #c9a96e; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .pundit-outlet { color: #8ba3c7; font-size: 11px; margin-bottom: 8px; }
+  .pundit-take { font-size: 12.5px; color: #cfd9e8; }
+  .pipeline { display: flex; align-items: stretch; gap: 10px; margin-bottom: 28px; }
+  .pipe-stage { flex: 1; background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px; padding: 16px 18px; position: relative; }
+  .pipe-stage.gold { border-color: #c9a96e; background: #13293f; }
+  .pipe-num { position: absolute; top: 8px; right: 14px; color: #c9a96e; font-size: 22px; font-weight: 800; opacity: 0.5; }
+  .pipe-title { color: #8ba3c7; font-size: 12px; letter-spacing: 2px; margin-bottom: 6px; }
+  .pipe-val { font-size: 17px; font-weight: 700; color: #e6edf7; }
+  .pipe-stage.gold .pipe-val { color: #c9a96e; }
+  .pipe-sub { color: #5f7aa0; font-size: 11px; margin-top: 4px; }
+  .pipe-arrow { display: flex; align-items: center; color: #c9a96e; font-size: 22px; font-weight: 700; }
+  .footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid #1c3358; color: #5f7aa0; font-size: 11px; line-height: 1.9; }
+  @media (max-width: 760px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); justify-content: center; }
+    .score { font-size: 34px; }
+    .drow { grid-template-columns: 100px 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">Global Think Tank · AI Match Forecast</div>
+    <h1>全球智库AI赛事预测日报</h1>
+    <div class="sub">
+      <span>日期：<b>2026-06-29</b></span>
+      <span>第 20260629 期</span>
+      <span>决策模型：<b>智谱 GLM-5.2</b></span>
+      <span>多模型决策台 · 数据 → 推理 → 决策</span>
+    </div>
+  </header>
+  
+  <div class="pipeline">
+    <div class="pipe-stage">
+      <div class="pipe-num">①</div>
+      <div class="pipe-title">数据源</div>
+      <div class="pipe-val">Football-Data 免费档</div>
+      <div class="pipe-sub">可切换：免费 / 付费 / 自定义</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage">
+      <div class="pipe-num">②</div>
+      <div class="pipe-title">大模型决策</div>
+      <div class="pipe-val">智谱 GLM-5.2</div>
+      <div class="pipe-sub">多模型可切换</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage gold">
+      <div class="pipe-num">③</div>
+      <div class="pipe-title">预测结果</div>
+      <div class="pipe-val">2 场预测</div>
+      <div class="pipe-sub">见下方详细报告</div>
+    </div>
+  </div>
+
+  
+  <section class="match-card">
+    <div class="match-meta">欧洲冠军联赛 · 决赛 · 温布利球场，伦敦 · 开球 03:00</div>
+    <div class="score-row">
+      <div class="team home">皇家马德里<br><span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i></span></div>
+      <div class="score">1 : 2</div>
+      <div class="team away"><br><span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i></span>曼城</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:56%"></div></div>
+      <span class="conf-val">56%</span>
+      <span class="winner">倾向：曼城</span>
+    </div>
+    <div class="logic-grid">
+      <div class="logic-box"><h4>数据洞察</h4><p>双方近5次交锋场均3.2球，进攻效率高；皇家马德里场均2.4球、近5场4胜；曼城场均2.6球、近5场4胜；皇家马德里核心球员出战成疑，火力折损。</p></div>
+      <div class="logic-box"><h4>球评员观点摘要</h4><p>三位专家中 3 位倾向客队，认为客队近期状态与战术纪律更胜一筹。</p></div>
+      <div class="logic-box gold"><h4>AI 综合推算</h4><p>综合交锋历史、近况、伤停与专家观点，AI 推算 皇家马德里 1-2 曼城，赛果倾向「曼城」，置信度 56%。该置信度仅反映数据一致性强度，不构成投注建议。</p></div>
+    </div>
+    <div class="data-table">
+      <div class="drow"><span class="dl">场均进球</span><span class="dv home">2.4</span><span class="dv away">2.6</span></div>
+      <div class="drow"><span class="dl">联赛排名</span><span class="dv home">第 1</span><span class="dv away">第 2</span></div>
+      <div class="drow"><span class="dl">近5次交锋</span><span class="dv home">主胜 2</span><span class="dv away">客胜 2（平 1，场均 3.2 球）</span></div>
+      <div class="drow"><span class="dl">伤停</span><span class="dv home">贝林厄姆（出战成疑）</span><span class="dv away">德布劳内（大概率出场）</span></div>
+      <div class="drow"><span class="dl">赔率参考（占位）</span><span class="dv home">2.35</span><span class="dv away">2.8</span></div>
+    </div>
+    <h4 class="pundits-title">海外 Top 球评员观点（AI 模拟）</h4>
+    <div class="pundits-grid">
+      
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Guillem Balagué</span><span class="pundit-lean">挺客队</span></div>
+        <div class="pundit-outlet">BBC Sport</div>
+        <p class="pundit-take">皇家马德里 vs 曼城：皇家马德里若失去中场核心，节奏将被削弱，曼城的控球优势会放大。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Jonathan Wilson</span><span class="pundit-lean">挺客队</span></div>
+        <div class="pundit-outlet">The Guardian</div>
+        <p class="pundit-take">皇家马德里 vs 曼城：阵型压缩与转换速度决定比赛，谁能在大禁区前沿制造人数优势，谁就掌握主动。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Gabriele Marcotti</span><span class="pundit-lean">挺客队</span></div>
+        <div class="pundit-outlet">ESPN</div>
+        <p class="pundit-take">皇家马德里 vs 曼城：体能与轮换深度被低估，曼城近期的心理势能更稳。</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="match-card">
+    <div class="match-meta">欧洲冠军联赛 · 半决赛 · 安联球场，慕尼黑 · 开球 03:00</div>
+    <div class="score-row">
+      <div class="team home">拜仁慕尼黑<br><span class="form"><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-l">负</i></span></div>
+      <div class="score">2 : 1</div>
+      <div class="team away"><br><span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i></span>阿森纳</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:62%"></div></div>
+      <span class="conf-val">62%</span>
+      <span class="winner">倾向：拜仁慕尼黑</span>
+    </div>
+    <div class="logic-grid">
+      <div class="logic-box"><h4>数据洞察</h4><p>双方近5次交锋场均2.8球，进攻效率高；拜仁慕尼黑场均2.7球、近5场3胜；阿森纳场均2.1球、近5场4胜；阿森纳核心球员带伤，稳定性下降。</p></div>
+      <div class="logic-box"><h4>球评员观点摘要</h4><p>三位专家中 3 位倾向主队，认为主场惯性 + 阵容完整度是关键。</p></div>
+      <div class="logic-box gold"><h4>AI 综合推算</h4><p>综合交锋历史、近况、伤停与专家观点，AI 推算 拜仁慕尼黑 2-1 阿森纳，赛果倾向「拜仁慕尼黑」，置信度 62%。该置信度仅反映数据一致性强度，不构成投注建议。</p></div>
+    </div>
+    <div class="data-table">
+      <div class="drow"><span class="dl">场均进球</span><span class="dv home">2.7</span><span class="dv away">2.1</span></div>
+      <div class="drow"><span class="dl">联赛排名</span><span class="dv home">第 1</span><span class="dv away">第 2</span></div>
+      <div class="drow"><span class="dl">近5次交锋</span><span class="dv home">主胜 3</span><span class="dv away">客胜 1（平 1，场均 2.8 球）</span></div>
+      <div class="drow"><span class="dl">伤停</span><span class="dv home">穆西亚拉（健康）</span><span class="dv away">萨卡（出战成疑）</span></div>
+      <div class="drow"><span class="dl">赔率参考（占位）</span><span class="dv home">2.1</span><span class="dv away">3.2</span></div>
+    </div>
+    <h4 class="pundits-title">海外 Top 球评员观点（AI 模拟）</h4>
+    <div class="pundits-grid">
+      
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Guillem Balagué</span><span class="pundit-lean">挺主队</span></div>
+        <div class="pundit-outlet">BBC Sport</div>
+        <p class="pundit-take">拜仁慕尼黑 vs 阿森纳：中场是胜负手，拜仁慕尼黑的传导深度足以撕裂对手防线。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Jonathan Wilson</span><span class="pundit-lean">挺主队</span></div>
+        <div class="pundit-outlet">The Guardian</div>
+        <p class="pundit-take">拜仁慕尼黑 vs 阿森纳：阵型压缩与转换速度决定比赛，谁能在大禁区前沿制造人数优势，谁就掌握主动。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Gabriele Marcotti</span><span class="pundit-lean">挺主队</span></div>
+        <div class="pundit-outlet">ESPN</div>
+        <p class="pundit-take">拜仁慕尼黑 vs 阿森纳：体能与轮换深度被低估，拜仁慕尼黑近期的心理势能更稳。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    免责声明：本报告由 AI 基于公开比赛数据与模拟专家观点自动生成，仅作技术演示与战术分析用途，<b>不构成任何投注、投资或博彩建议</b>。球评员观点为 AI 模拟生成，不代表其本人立场。置信度反映数据一致性强度，不保证赛果。<br>
+    生成时间：2026-06-29 22:46 · 《全球智库AI赛事预测日报》
+  </footer>
+</div>
+</body>
+</html>
