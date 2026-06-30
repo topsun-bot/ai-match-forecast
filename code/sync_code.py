@@ -29,8 +29,9 @@ def _should_include(fn):
     return os.path.splitext(fn)[1] in INCLUDE_EXT
 
 
-def _sync_workflows(code_dir):
-    """递归同步 .github/ 子树到 code/.github/（让 GitHub Actions workflow 随发布推到仓库）。
+def _sync_workflows(site_dir):
+    """递归同步 .github/workflows 到仓库根 .github/workflows。
+    GitHub Actions 只识别仓库根的 .github/workflows/，code/.github/ 不会触发——所以放根目录。
     只同步 .yml/.yaml，保持白名单安全。
     """
     gh = os.path.join(HERE, ".github")
@@ -40,7 +41,7 @@ def _sync_workflows(code_dir):
     for root, dirs, files in os.walk(gh):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_NAMES]
         rel = os.path.relpath(root, HERE)
-        dst_root = os.path.join(code_dir, rel)
+        dst_root = os.path.join(site_dir, rel)
         os.makedirs(dst_root, exist_ok=True)
         for fn in files:
             if os.path.splitext(fn)[1] not in WORKFLOW_EXT:
@@ -65,7 +66,7 @@ def main():
         shutil.copy2(src, os.path.join(code_dir, fn))
         copied += 1
         print(f"  ✓ {fn}")
-    copied += _sync_workflows(code_dir)
+    copied += _sync_workflows(args.site_dir)
     print(f"\n✓ 已同步 {copied} 个文件到：{code_dir}")
     print(f"  排除：.env（含 key）、__pycache__/、reports/（HTML 已在根，PDF 不推）")
 
