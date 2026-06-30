@@ -1,0 +1,6 @@
+# mock 模式零依赖，可直接 python3 generate_report.py 跑通。
+# 真实模式（接 Football-Data.org / GLM-5.2）也只用 Python 标准库 urllib，
+# 无需安装任何第三方包。下面是可选增强：
+# python-dotenv>=1.0     # 更稳的 .env 加载（骨架已内置简易解析）
+# zhipuai>=2.0           # 智谱官方 SDK（可选，骨架默认 urllib 直连）
+# openai>=1.0            # OpenAI 官方 SDK（可选）

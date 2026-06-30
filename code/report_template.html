@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>全球智库AI赛事预测日报 · {{DATE}}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: #060d1f; color: #e6edf7; line-height: 1.7; padding: 40px 20px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  .masthead {
+    border: 1px solid #c9a96e; border-left: 6px solid #c9a96e;
+    background: linear-gradient(135deg, #0a2540, #102b4a);
+    padding: 28px 32px; margin-bottom: 28px; border-radius: 6px;
+  }
+  .masthead .brand { color: #c9a96e; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; }
+  .masthead h1 { font-size: 30px; margin: 6px 0 10px; font-weight: 700; }
+  .masthead .sub { color: #8ba3c7; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .masthead .sub b { color: #c9a96e; }
+  .match-card {
+    background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px;
+    padding: 26px 28px; margin-bottom: 24px;
+  }
+  .match-meta { color: #8ba3c7; font-size: 12px; margin-bottom: 14px; letter-spacing: 1px; }
+  .score-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .team { font-size: 22px; font-weight: 600; flex: 1; }
+  .team.home { text-align: right; }
+  .team.away { text-align: left; }
+  .score { font-size: 44px; font-weight: 800; color: #c9a96e; letter-spacing: 2px; }
+  .form { display: inline-block; margin: 0 8px; vertical-align: middle; }
+  .form i { font-style: normal; display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 4px; font-size: 11px; margin: 0 2px; font-weight: 700; }
+  .f-w { background: #1f7a3a; color: #fff; }
+  .f-d { background: #5a5a5a; color: #fff; }
+  .f-l { background: #a83232; color: #fff; }
+  .confidence { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .conf-label { color: #8ba3c7; font-size: 12px; white-space: nowrap; }
+  .bar { flex: 1; height: 8px; background: #1c3358; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, #c9a96e, #e6c98a); }
+  .conf-val { color: #c9a96e; font-weight: 700; }
+  .winner { color: #e6edf7; font-size: 13px; margin-left: 8px; white-space: nowrap; }
+  .logic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 18px 0; }
+  .logic-box { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .logic-box.gold { border-color: #c9a96e; background: #13293f; }
+  .logic-box h4 { color: #c9a96e; font-size: 13px; margin-bottom: 6px; }
+  .logic-box p { font-size: 13px; color: #cfd9e8; }
+  .data-table { background: #0c2038; border: 1px solid #1c3358; border-radius: 8px; padding: 4px 16px; margin: 16px 0; }
+  .drow { display: grid; grid-template-columns: 130px 1fr 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #16294a; font-size: 13px; }
+  .drow:last-child { border-bottom: none; }
+  .dl { color: #8ba3c7; }
+  .dv.home { text-align: right; color: #e6edf7; }
+  .dv.away { text-align: left; color: #e6edf7; }
+  .pundits-title { color: #c9a96e; font-size: 14px; margin: 18px 0 10px; }
+  .pundits-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .pundit-card { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .pundit-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .pundit-name { font-weight: 700; font-size: 14px; }
+  .pundit-lean { font-size: 11px; color: #060d1f; background: #c9a96e; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .pundit-outlet { color: #8ba3c7; font-size: 11px; margin-bottom: 8px; }
+  .pundit-take { font-size: 12.5px; color: #cfd9e8; }
+  .pipeline { display: flex; align-items: stretch; gap: 10px; margin-bottom: 28px; }
+  .pipe-stage { flex: 1; background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px; padding: 16px 18px; position: relative; }
+  .pipe-stage.gold { border-color: #c9a96e; background: #13293f; }
+  .pipe-num { position: absolute; top: 8px; right: 14px; color: #c9a96e; font-size: 22px; font-weight: 800; opacity: 0.5; }
+  .pipe-title { color: #8ba3c7; font-size: 12px; letter-spacing: 2px; margin-bottom: 6px; }
+  .pipe-val { font-size: 17px; font-weight: 700; color: #e6edf7; }
+  .pipe-stage.gold .pipe-val { color: #c9a96e; }
+  .pipe-sub { color: #5f7aa0; font-size: 11px; margin-top: 4px; }
+  .pipe-arrow { display: flex; align-items: center; color: #c9a96e; font-size: 22px; font-weight: 700; }
+  .footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid #1c3358; color: #5f7aa0; font-size: 11px; line-height: 1.9; }
+  @media (max-width: 760px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); justify-content: center; }
+    .score { font-size: 34px; }
+    .drow { grid-template-columns: 100px 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">Global Think Tank · AI Match Forecast</div>
+    <h1>全球智库AI赛事预测日报</h1>
+    <div class="sub">
+      <span>日期：<b>{{DATE}}</b></span>
+      <span>{{ISSUE}}</span>
+      <span>决策模型：<b>{{MODEL_LABEL}}</b></span>
+      <span>多模型决策台 · 数据 → 推理 → 决策</span>
+    </div>
+  </header>
+  {{PIPELINE}}
+  {{MATCHES}}
+  <footer class="footer">
+    免责声明：本报告由 AI 基于公开比赛数据与模拟专家观点自动生成，仅作技术演示与战术分析用途，<b>不构成任何投注、投资或博彩建议</b>。球评员观点为 AI 模拟生成，不代表其本人立场。置信度反映数据一致性强度，不保证赛果。<br>
+    生成时间：{{FOOTER_TIME}} · 《全球智库AI赛事预测日报》
+  </footer>
+</div>
+</body>
+</html>
