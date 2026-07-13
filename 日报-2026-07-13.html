@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>全球智库AI赛事预测日报 · 2026-07-13</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", -apple-system, sans-serif;
+    background: #060d1f; color: #e6edf7; line-height: 1.7; padding: 40px 20px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .masthead {
+    border: 1px solid #c9a96e; border-left: 6px solid #c9a96e;
+    background: linear-gradient(135deg, #0a2540, #102b4a);
+    padding: 28px 32px; margin-bottom: 24px; border-radius: 6px;
+  }
+  .masthead .brand { color: #c9a96e; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; }
+  .masthead h1 { font-size: 30px; margin: 6px 0 10px; font-weight: 700; }
+  .masthead .sub { color: #8ba3c7; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .masthead .sub b { color: #c9a96e; }
+  .match-card {
+    background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px;
+    padding: 26px 28px; margin-bottom: 24px;
+  }
+  .match-meta { color: #8ba3c7; font-size: 12px; margin-bottom: 14px; letter-spacing: 1px; }
+  .score-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .team { font-size: 22px; font-weight: 600; flex: 1; }
+  .team.home { text-align: right; }
+  .team.away { text-align: left; }
+  .score { font-size: 48px; font-weight: 800; color: #c9a96e; letter-spacing: 2px; }
+  .form { display: inline-block; margin: 0 8px; vertical-align: middle; }
+  .form i { font-style: normal; display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 4px; font-size: 11px; margin: 0 2px; font-weight: 700; }
+  .f-w { background: #1f7a3a; color: #fff; }
+  .f-d { background: #5a5a5a; color: #fff; }
+  .f-l { background: #a83232; color: #fff; }
+  .confidence { display: flex; align-items: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+  .conf-label { color: #8ba3c7; font-size: 12px; white-space: nowrap; }
+  .bar { flex: 1; min-width: 120px; height: 8px; background: #1c3358; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, #c9a96e, #e6c98a); }
+  .conf-val { color: #c9a96e; font-weight: 700; }
+  .winner { color: #e6edf7; font-size: 13px; margin-left: 8px; white-space: nowrap; }
+  .block-title { color: #c9a96e; font-size: 15px; margin: 20px 0 10px; letter-spacing: 1px; border-left: 3px solid #c9a96e; padding-left: 10px; }
+  .reasoning-chain { list-style: none; counter-reset: step; padding: 0; }
+  .reasoning-chain li { position: relative; padding: 9px 0 9px 40px; font-size: 13.5px; color: #cfd9e8; border-bottom: 1px solid #16294a; }
+  .reasoning-chain li:last-child { border-bottom: none; }
+  .reasoning-chain li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 9px; width: 28px; height: 28px; line-height: 28px; text-align: center; background: #13293f; border: 1px solid #c9a96e; color: #c9a96e; border-radius: 50%; font-size: 12px; font-weight: 700; }
+  .logic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 18px 0; }
+  .logic-box { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .logic-box.gold { border-color: #c9a96e; background: #13293f; }
+  .logic-box h4 { color: #c9a96e; font-size: 13px; margin-bottom: 6px; }
+  .logic-box p { font-size: 13px; color: #cfd9e8; }
+  .data-table { background: #0c2038; border: 1px solid #1c3358; border-radius: 8px; padding: 4px 16px; margin: 16px 0; }
+  .drow { display: grid; grid-template-columns: 130px 1fr 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #16294a; font-size: 13px; }
+  .drow:last-child { border-bottom: none; }
+  .dl { color: #8ba3c7; }
+  .dv.home { text-align: right; color: #e6edf7; }
+  .dv.away { text-align: left; color: #e6edf7; }
+  .pundits-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .pundit-card { background: #102744; border: 1px solid #1c3358; border-radius: 8px; padding: 14px; }
+  .pundit-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .pundit-name { font-weight: 700; font-size: 14px; }
+  .pundit-lean { font-size: 11px; color: #060d1f; background: #c9a96e; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .pundit-outlet { color: #8ba3c7; font-size: 11px; margin-bottom: 8px; }
+  .pundit-take { font-size: 12.5px; color: #cfd9e8; }
+  .grounding { background: #0a1b33; border: 1px solid #1c3358; border-left: 4px solid #c9a96e; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; }
+  .grounding-title { color: #c9a96e; font-size: 12px; letter-spacing: 2px; margin-bottom: 8px; }
+  .grounding-list { list-style: none; columns: 2; column-gap: 24px; }
+  .grounding-list li { font-size: 12px; margin-bottom: 4px; break-inside: avoid; }
+  .grounding-list a { color: #8ba3c7; text-decoration: none; }
+  .grounding-list a:hover { color: #c9a96e; text-decoration: underline; }
+  .pipeline { display: flex; align-items: stretch; gap: 10px; margin-bottom: 24px; }
+  .pipe-stage { flex: 1; background: #0a1b33; border: 1px solid #1c3358; border-radius: 10px; padding: 16px 18px; position: relative; }
+  .pipe-stage.gold { border-color: #c9a96e; background: #13293f; }
+  .pipe-num { position: absolute; top: 8px; right: 14px; color: #c9a96e; font-size: 22px; font-weight: 800; opacity: 0.5; }
+  .pipe-title { color: #8ba3c7; font-size: 12px; letter-spacing: 2px; margin-bottom: 6px; }
+  .pipe-val { font-size: 17px; font-weight: 700; color: #e6edf7; }
+  .pipe-stage.gold .pipe-val { color: #c9a96e; }
+  .pipe-sub { color: #5f7aa0; font-size: 11px; margin-top: 4px; }
+  .pipe-arrow { display: flex; align-items: center; color: #c9a96e; font-size: 22px; font-weight: 700; }
+  #pager { display: flex; justify-content: center; gap: 8px; margin: 24px 0; flex-wrap: wrap; }
+  #pager button { background: #0a1b33; border: 1px solid #1c3358; color: #cfd9e8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  #pager button:hover:not(:disabled) { border-color: #c9a96e; color: #c9a96e; }
+  #pager button.active { background: #c9a96e; color: #060d1f; border-color: #c9a96e; font-weight: 700; }
+  #pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid #1c3358; color: #5f7aa0; font-size: 11px; line-height: 1.9; }
+  @media (max-width: 1023px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    .logic-grid, .pundits-grid { grid-template-columns: 1fr; }
+    .grounding-list { columns: 1; }
+    .pipeline { flex-direction: column; }
+    .pipe-arrow { transform: rotate(90deg); justify-content: center; }
+    .score { font-size: 36px; }
+    .team { font-size: 18px; }
+    .drow { grid-template-columns: 100px 1fr 1fr; }
+    body { padding: 20px 12px; }
+    .masthead { padding: 20px; }
+    .match-card { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">Global Think Tank · AI Match Forecast</div>
+    <h1>全球智库AI赛事预测日报</h1>
+    <div class="sub">
+      <span>日期：<b>2026-07-13</b></span>
+      <span>第 20260713 期</span>
+      <span>决策模型：<b>Google Gemini 2.5 Pro</b></span>
+      <span>2026 世界杯 · 数据 → 推理 → 决策</span>
+    </div>
+  </header>
+  
+  <div class="pipeline">
+    <div class="pipe-stage">
+      <div class="pipe-num">①</div>
+      <div class="pipe-title">数据源</div>
+      <div class="pipe-val">Gemini Google Search 实时接地</div>
+      <div class="pipe-sub">Gemini Google Search 实时接地</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage">
+      <div class="pipe-num">②</div>
+      <div class="pipe-title">大模型决策</div>
+      <div class="pipe-val">Google Gemini 2.5 Pro</div>
+      <div class="pipe-sub">推理 + 球评综合</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-stage gold">
+      <div class="pipe-num">③</div>
+      <div class="pipe-title">预测结果</div>
+      <div class="pipe-val">2 场预测</div>
+      <div class="pipe-sub">见下方详细报告</div>
+    </div>
+  </div>
+
+  
+  <div id="matches">
+  <section class="match-card">
+    <div class="match-meta">2026 FIFA 世界杯 · 1/8 决赛 · 梅赛德斯奔驰体育场，亚特兰大 · 开球 09:00</div>
+    <div class="score-row">
+      <div class="team home">巴西<span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i></span></div>
+      <div class="score">1 : 2</div>
+      <div class="team away"><span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i></span>阿根廷</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="conf-val">60%</span>
+      <span class="winner">倾向：阿根廷</span>
+    </div>
+    <h3 class="block-title">推理过程</h3>
+    <div class="logic-grid"><div class="logic-box"><h4>数据洞察</h4><p>Both teams exhibit superb and nearly identical recent form. The head-to-head record is perfectly balanced (2W-1D-2L), underscoring the fierce rivalry. The most critical data point is the injury status: Neymar&#x27;s potential absence is a significant blow to Brazil&#x27;s attack, while Messi&#x27;s likely presence provides a massive boost for Argentina.</p></div><div class="logic-box"><h4>球评员观点摘要</h4><p>The expert opinions are split, reflecting the match&#x27;s razor-thin margins. There is no consensus, with predictions for a home win, an away win, and a draw. However, all agree that the match will be incredibly tight and likely decided by a single moment of brilliance or a key player&#x27;s influence.</p></div><div class="logic-box gold"><h4>AI 综合推算</h4><p>Synthesizing the data and expert opinions, the model identifies the match as exceptionally balanced. Both teams&#x27; form and historical encounters suggest a high probability of a draw in regular time. However, the player availability variable acts as the tie-breaker. The confirmed presence of a game-changing talent like Messi, contrasted with the uncertainty surrounding Brazil&#x27;s talisman Neymar, shifts the probability slightly in Argentina&#x27;s favor. Therefore, a narrow victory for Argentina, potentially after a hard-fought 90 minutes, is the most logical outcome.</p></div></div>
+    <div class="data-table"><div class="drow"><span class="dl">排名</span><span class="dv home">第 1</span><span class="dv away">第 1</span></div><div class="drow"><span class="dl">场均进球</span><span class="dv home">2.1</span><span class="dv away">2.3</span></div><div class="drow"><span class="dl">近况交锋</span><span class="dv home">主胜 2</span><span class="dv away">客胜 2（平 1，场均 2.8 球）</span></div><div class="drow"><span class="dl">伤停</span><span class="dv home">内马尔（出战成疑）</span><span class="dv away">梅西（大概率出场）</span></div><div class="drow"><span class="dl">赔率参考</span><span class="dv home">2.55</span><span class="dv away">2.75</span></div></div>
+    <h3 class="block-title">球评观点</h3><div class="pundits-grid">
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Gary Neville</span><span class="pundit-lean">看平局</span></div>
+        <div class="pundit-outlet">Sky Sports</div>
+        <p class="pundit-take">In a World Cup knockout stage, the immense pressure and tactical caution often neutralize attacking flair; this has all the makings of a stalemate decided by extra time or penalties.</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Thierry Henry</span><span class="pundit-lean">挺客队</span></div>
+        <div class="pundit-outlet">CBS Sports</div>
+        <p class="pundit-take">Big games are decided by big players. With Messi available for Argentina and Neymar&#x27;s fitness a major doubt for Brazil, the decisive edge in individual brilliance clearly lies with the Albiceleste.</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">Juan Pablo Varsky</span><span class="pundit-lean">挺主队</span></div>
+        <div class="pundit-outlet">ESPN Deportes</div>
+        <p class="pundit-take">This &#x27;Superclásico&#x27; is a battle of wills, and Brazil&#x27;s new generation has the depth and hunger to overcome Neymar&#x27;s potential absence, fueled by the desire to dethrone their arch-rivals.</p>
+      </div></div>
+  </section>
+
+
+  <section class="match-card">
+    <div class="match-meta">2026 FIFA 世界杯 · 1/8 决赛 · 大都会体育场，洛杉矶 · 开球 03:00</div>
+    <div class="score-row">
+      <div class="team home">法国<span class="form"><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-l">负</i></span></div>
+      <div class="score">2 : 1</div>
+      <div class="team away"><span class="form"><i class="f-w">胜</i><i class="f-w">胜</i><i class="f-d">平</i><i class="f-w">胜</i><i class="f-w">胜</i></span>英格兰</div>
+    </div>
+    <div class="confidence">
+      <span class="conf-label">AI 置信度</span>
+      <div class="bar"><div class="bar-fill" style="width:65%"></div></div>
+      <span class="conf-val">65%</span>
+      <span class="winner">倾向：法国</span>
+    </div>
+    <h3 class="block-title">推理过程</h3>
+    <div class="logic-grid"><div class="logic-box"><h4>数据洞察</h4><p>法国队近期交锋记录占优（3胜1平1负），且场均进球数（2.4）显著高于英格兰（1.9）。本场最关键的变量是核心球员的健康状况：法国的姆巴佩状态正佳，而英格兰的队长凯恩出战成疑，这将严重影响英格兰的进攻终结能力和战术支点作用。</p></div><div class="logic-box"><h4>球评员观点摘要</h4><p>三位评论员观点存在分歧，但核心都围绕着凯恩的伤病影响。内维尔认为这是决定性劣势，温格预见一场均势下的战术僵局，而希勒则相信英格兰的年轻一代有能力填补空缺。共识是，比赛将非常胶着，胜负取决于关键球员的临场发挥。</p></div><div class="logic-box gold"><h4>AI 综合推算</h4><p>综合分析，尽管双方近期状态都非常出色，但法国队拥有两大核心优势：一是历史交锋战绩带来的心理优势；二是核心攻击手姆巴佩健康无虞，而对手核心凯恩状态未知。在淘汰赛这种分秒必争的比赛中，顶级射手的健康状况是决定性的。赔率也反映了法国是更被看好的一方。因此，AI预测法国将凭借更稳定和完整的攻击线，以微弱优势赢得比赛。</p></div></div>
+    <div class="data-table"><div class="drow"><span class="dl">排名</span><span class="dv home">第 1</span><span class="dv away">第 2</span></div><div class="drow"><span class="dl">场均进球</span><span class="dv home">2.4</span><span class="dv away">1.9</span></div><div class="drow"><span class="dl">近况交锋</span><span class="dv home">主胜 3</span><span class="dv away">客胜 1（平 1，场均 2.5 球）</span></div><div class="drow"><span class="dl">伤停</span><span class="dv home">姆巴佩（健康）</span><span class="dv away">凯恩（出战成疑）</span></div><div class="drow"><span class="dl">赔率参考</span><span class="dv home">2.1</span><span class="dv away">3.4</span></div></div>
+    <h3 class="block-title">球评观点</h3><div class="pundits-grid">
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">加里·内维尔</span><span class="pundit-lean">挺主队</span></div>
+        <div class="pundit-outlet">天空体育</div>
+        <p class="pundit-take">凯恩的出战成疑是英格兰战术体系的致命裂痕，面对姆巴佩领衔的法国全明星攻击线，三狮军团的防线将难以承受持续的压力。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">阿尔塞纳·温格</span><span class="pundit-lean">看平局</span></div>
+        <div class="pundit-outlet">beIN SPORTS</div>
+        <p class="pundit-take">这是一场典型的决赛级别对决，中场控制权的争夺将决定比赛走向，两队实力过于接近，常规时间内很可能以平局收场。</p>
+      </div>
+      <div class="pundit-card">
+        <div class="pundit-head"><span class="pundit-name">阿兰·希勒</span><span class="pundit-lean">挺客队</span></div>
+        <div class="pundit-outlet">BBC 体育</div>
+        <p class="pundit-take">英格兰的整体性和年轻球员的活力不应被低估，贝林厄姆和萨卡的冲击力足以弥补凯恩状态不佳的潜在影响，他们有机会创造惊喜。</p>
+      </div></div>
+  </section>
+</div>
+  <div id="pager"></div>
+  <footer class="footer">
+    免责声明：本报告由 AI 基于公开比赛数据与 Gemini Google Search 实时接地自动生成，仅作技术演示与战术分析用途，<b>不构成任何投注、投资或博彩建议</b>。球评观点为 AI 综合公开信息生成。置信度反映数据一致性强度，不保证赛果。<br>
+    生成时间：2026-07-13 03:35 · 《全球智库AI赛事预测日报》
+  </footer>
+</div>
+<script>
+(function(){
+  var cards = document.querySelectorAll('#matches .match-card');
+  if(cards.length === 0) return;
+  var page = 0;
+  function perPage(){
+    var w = window.innerWidth;
+    if(w >= 1024) return 3;
+    if(w >= 768) return 2;
+    return 1;
+  }
+  var pager = document.getElementById('pager');
+  function render(){
+    var per = perPage();
+    var total = Math.ceil(cards.length / per);
+    if(page >= total) page = total - 1;
+    if(page < 0) page = 0;
+    var start = page * per;
+    for(var i = 0; i < cards.length; i++){
+      cards[i].style.display = (i >= start && i < start + per) ? '' : 'none';
+    }
+    if(total <= 1){ pager.innerHTML = ''; return; }
+    var html = '<button class="pg-btn" data-act="prev"' + (page === 0 ? ' disabled' : '') + '>上一页</button>';
+    for(var j = 0; j < total; j++){
+      html += '<button class="pg-num' + (j === page ? ' active' : '') + '" data-page="' + j + '">' + (j + 1) + '</button>';
+    }
+    html += '<button class="pg-btn" data-act="next"' + (page === total - 1 ? ' disabled' : '') + '>下一页</button>';
+    pager.innerHTML = html;
+  }
+  pager.addEventListener('click', function(e){
+    var t = e.target;
+    if(t.tagName !== 'BUTTON') return;
+    var per = perPage();
+    var total = Math.ceil(cards.length / per);
+    if(t.dataset.act === 'prev') page = Math.max(0, page - 1);
+    else if(t.dataset.act === 'next') page = Math.min(total - 1, page + 1);
+    else if(t.dataset.page !== undefined) page = parseInt(t.dataset.page, 10);
+    render();
+    var top = document.getElementById('matches').getBoundingClientRect().top + window.pageYOffset - 20;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  });
+  var rt;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ page = 0; render(); }, 150); });
+  render();
+})();
+</script>
+</body>
+</html>
