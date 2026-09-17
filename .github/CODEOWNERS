@@ -9,5 +9,7 @@
 /REVIEW.md @topsun-bot/topsun
 /.cursor/BUGBOT.md @topsun-bot/topsun
 /code/publish_site.py @topsun-bot/topsun
+/code/generate_report.py @topsun-bot/topsun
+/code/analyst.py @topsun-bot/topsun
 /code/publish_to_github.sh @topsun-bot/topsun
 /docs/engineering-checks.md @topsun-bot/topsun

@@ -45,7 +45,7 @@ PR 不设置路径过滤；纯文档 PR 也运行这套轻量检查。只有非 
 源代码在 main，自动生成的站点历史在 site-content；日报更新不直接提交 main。
 Pages artifact 仅包含 index.html、.nojekyll 和符合命名要求的日报 HTML，排除源代码、凭据及符号链接。
 
-- 定时／手动真实运行：需要有效 GEMINI_API_KEY；API 错误应保留失败记录，不能靠替换成 mock 来证明真实服务恢复。
+- 定时／手动真实运行：需要有效 GEMINI_API_KEY，强制 --strict-live；API 错误或无法解析的输出直接失败，禁止回退样例后发布。明确“今日休赛”不生成新日报，保留原归档。
 - 手动 mock：只供离线预览，不更新 site-content，不部署 Pages。
 - main 合并：重建归档站点，不触发真实模型调用。
 

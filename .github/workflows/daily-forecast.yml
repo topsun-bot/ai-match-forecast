@@ -47,7 +47,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           test -n "$GEMINI_API_KEY" || { echo 'GEMINI_API_KEY is missing; live publication stopped.' >&2; exit 1; }
-          python3 generate_report.py --model gemini-2.5-pro --no-mock-data --no-open
+          python3 generate_report.py --model gemini-2.5-pro --no-mock-data --strict-live --no-open
       - name: Read existing report archive
         id: history
         shell: bash

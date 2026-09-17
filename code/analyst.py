@@ -164,7 +164,7 @@ def _mock_synthesis(home, away, ph, pa, winner, conf):
 
 # ===== v2：Gemini Google Search grounding 当日全量分析 =====
 
-def analyze_daily(date_str, router: LLMRouter, mock_data=False):
+def analyze_daily(date_str, router: LLMRouter, mock_data=False, strict=False):
     """当日全量分析主入口。返回 (results, citations)：
     - results: [{"match":..., "analysis":...}, ...]
     - citations: grounding 全局来源 [{"uri","title"}, ...]
@@ -172,12 +172,16 @@ def analyze_daily(date_str, router: LLMRouter, mock_data=False):
     真实路径：Gemini 用 google_search 搜 2026 世界杯当日赛程 + 分析（赛程也由 Gemini 搜，
     不再依赖 API-Football）。mock_data 或 router.mock 时降级为世界杯样例 + 单场分析。
     """
+    if strict and (mock_data or router.mock):
+        raise ValueError("严格发布模式不接受 mock 数据或 mock 模型")
     if mock_data or router.mock:
         matches = get_matches(date_str, mock=True)
         return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
     try:
         return _grounding_analyze_daily(date_str, router)
     except Exception as e:
+        if strict:
+            raise RuntimeError("真实数据分析失败，严格发布模式禁止回退样例") from e
         print(f"⚠ Gemini grounding 失败：{e}，降级世界杯样例。")
         matches = get_matches(date_str, mock=True)
         return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
@@ -196,6 +200,8 @@ def _grounding_analyze_daily(date_str, router):
     )
     results = _parse_daily(resp["text"], date_str)
     if not results:
+        if resp["text"].strip() == "今日休赛":
+            return [], resp["citations"]
         raise RuntimeError("未能从 Gemini 输出解析出任何比赛")
     return results, resp["citations"]
 

@@ -44,6 +44,7 @@ def main():
     p.add_argument("--mock-data", dest="mock_data", action="store_true", default=True, help="比赛数据用样例（默认开）")
     p.add_argument("--no-mock-data", dest="mock_data", action="store_false", help="比赛数据走真实 Football-Data（下一阶段实现）")
     p.add_argument("--mock-llm", dest="mock_llm", action="store_true", default=False, help="强制 LLM 走 mock（默认有 key 就真实）")
+    p.add_argument("--strict-live", action="store_true", help="真实发布：禁止 mock 与错误回退，分析失败则退出")
     p.add_argument("--no-open", action="store_true", help="不自动打开浏览器")
     p.add_argument("--pdf", action="store_true", help="生成 HTML 后自动导出 PDF（用 Chrome 无头打印）")
     p.add_argument("--out", default=os.path.join(HERE, "reports"), help="输出目录")
@@ -54,12 +55,14 @@ def main():
     date_str = datetime.date.today().isoformat() if args.date == "today" else args.date
 
     router = LLMRouter(args.model, mock=args.mock_llm)
+    if args.strict_live and (args.mock_data or router.mock or router.cfg["provider"] != "gemini"):
+        p.error("--strict-live 需要 --no-mock-data、有效 Gemini 配置且不能启用 mock")
     grounding = (not args.mock_data) and (not router.mock)
     src = "Gemini Google Search 接地（2026 世界杯）" if grounding else "样例数据"
     print(f"模型：{router.label}（{'mock' if router.mock else '真实'}模式）｜数据档：{args.data_tier}｜{src}")
     print("分析中…")
 
-    results, citations = analyst.analyze_daily(date_str, router, mock_data=args.mock_data)
+    results, citations = analyst.analyze_daily(date_str, router, mock_data=args.mock_data, strict=args.strict_live)
     if args.match:
         results = [r for r in results if r["match"]["id"] == args.match]
     if not results:
