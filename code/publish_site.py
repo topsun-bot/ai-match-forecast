@@ -10,29 +10,37 @@ import re
 import shutil
 import argparse
 import datetime
+import html
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPORTS_DIR = os.path.join(HERE, "reports")
 DEFAULT_SITE_DIR = os.path.expanduser("~/Documents/ai-match-forecast-site")
 
 
-def _scan():
+def _scan(directory=None):
+    directory = REPORTS_DIR if directory is None else directory
     items = []
-    for fn in os.listdir(REPORTS_DIR):
-        if fn.startswith("日报-") and fn.endswith(".html"):
-            m = re.search(r"(\d{4}-\d{2}-\d{2})", fn)
-            items.append((m.group(1) if m else fn, fn))
+    if not os.path.isdir(directory):
+        return items
+    for fn in os.listdir(directory):
+        m = re.fullmatch(r"日报-(\d{4}-\d{2}-\d{2})\.html", fn)
+        if m and os.path.isfile(os.path.join(directory, fn)) and not os.path.islink(os.path.join(directory, fn)):
+            try:
+                datetime.date.fromisoformat(m.group(1))
+            except ValueError:
+                continue
+            items.append((m.group(1), fn))
     items.sort(key=lambda x: x[0], reverse=True)
     return items
 
 
 def _index_html(reports, updated_str=""):
     rows = "".join(
-        f'<li><a href="{fn}"><span class="date">{date}</span><span class="go">查看 →</span></a></li>'
+        f'<li><a href="{html.escape(fn, quote=True)}"><span class="date">{html.escape(date)}</span><span class="go">查看 →</span></a></li>'
         for date, fn in reports
     )
     empty = '<li class="empty">还没有报告。先在本地生成一份。</li>' if not reports else ""
-    updated_html = f'<div class="updated">最后更新：{updated_str}</div>' if updated_str else ""
+    updated_html = f'<div class="updated">最后更新：{html.escape(updated_str)}</div>' if updated_str else ""
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -72,18 +80,24 @@ def _index_html(reports, updated_str=""):
 def main():
     p = argparse.ArgumentParser(description="同步日报到 GitHub Pages 部署目录（本地，不 push）")
     p.add_argument("--site-dir", default=DEFAULT_SITE_DIR)
+    p.add_argument("--reports-dir", default=REPORTS_DIR)
     args = p.parse_args()
-    reports = _scan()
+    new_reports = _scan(args.reports_dir)
     os.makedirs(args.site_dir, exist_ok=True)
     # .nojekyll：让 GitHub Pages 直接 serve 原始 HTML，跳过 Jekyll（保护中文文件名/下划线文件不被过滤）
     open(os.path.join(args.site_dir, ".nojekyll"), "w").close()
     copied = 0
-    for _, fn in reports:
-        shutil.copy2(os.path.join(REPORTS_DIR, fn), os.path.join(args.site_dir, fn))
+    for _, fn in new_reports:
+        source = os.path.join(args.reports_dir, fn)
+        destination = os.path.join(args.site_dir, fn)
+        if os.path.abspath(source) != os.path.abspath(destination):
+            shutil.copy2(source, destination)
         copied += 1
+    # Include previous published reports, not only today's generator output.
+    reports = _scan(args.site_dir)
     updated_str = ""
     if reports:
-        latest = os.path.join(REPORTS_DIR, reports[0][1])
+        latest = os.path.join(args.site_dir, reports[0][1])
         updated_str = datetime.datetime.fromtimestamp(os.path.getmtime(latest)).strftime("%Y-%m-%d %H:%M")
     with open(os.path.join(args.site_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(_index_html(reports, updated_str))

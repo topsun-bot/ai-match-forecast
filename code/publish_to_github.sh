@@ -19,6 +19,13 @@ python3 sync_code.py --site-dir "$SITE_DIR"
 
 cd "$SITE_DIR"
 
+# Source main now requires reviewed PRs. Publishing is handled by Pages Actions.
+if [ ! -d .git ] || [ "$(git branch --show-current)" = main ]; then
+  echo "✗ 请先在现有仓库创建工作分支，再提交 PR；不能直接提交或推送 main。"
+  echo "  日报自动发布由 GitHub Actions 负责。"
+  exit 1
+fi
+
 echo ""
 echo "=== 2/4 Git 提交 ==="
 if [ ! -d ".git" ]; then

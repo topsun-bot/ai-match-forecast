@@ -7,6 +7,7 @@
 import os
 import html as _html
 import datetime
+from urllib.parse import urlsplit
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(HERE, "report_template.html")
@@ -23,9 +24,9 @@ def render_report(date_str, issue, model_label, data_tier_label, n_matches, resu
     pipeline_html = _render_pipeline(data_tier_label, model_label, n_matches)
     citations_html = _render_citations(citations)
     return (
-        tpl.replace("{{DATE}}", date_str)
-        .replace("{{ISSUE}}", issue)
-        .replace("{{MODEL_LABEL}}", model_label)
+        tpl.replace("{{DATE}}", _esc(date_str))
+        .replace("{{ISSUE}}", _esc(issue))
+        .replace("{{MODEL_LABEL}}", _esc(model_label))
         .replace("{{PIPELINE}}", pipeline_html)
         .replace("{{CITATIONS}}", citations_html)
         .replace("{{MATCHES}}", matches_html)
@@ -65,7 +66,7 @@ def _render_citations(citations):
         return ""
     items = "".join(
         f'<li><a href="{_esc(c["uri"])}" target="_blank" rel="noopener">{_esc(c.get("title") or c["uri"])}</a></li>'
-        for c in citations[:12] if c.get("uri")
+        for c in citations[:12] if _safe_source_url(c.get("uri"))
     )
     if not items:
         return ""
@@ -75,6 +76,16 @@ def _render_citations(citations):
         f'<ul class="grounding-list">{items}</ul>'
         '</div>'
     )
+
+
+def _safe_source_url(uri):
+    if not isinstance(uri, str):
+        return False
+    try:
+        parsed = urlsplit(uri)
+        return parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc)
+    except ValueError:
+        return False
 
 
 def _render_match(r):
@@ -104,7 +115,7 @@ def _render_match(r):
     <div class="match-meta">{_esc(meta)}</div>
     <div class="score-row">
       <div class="team home">{_esc(home['name'])}{home_form}</div>
-      <div class="score">{pred.get('home', 0)} : {pred.get('away', 0)}</div>
+      <div class="score">{_esc(pred.get('home', 0))} : {_esc(pred.get('away', 0))}</div>
       <div class="team away">{away_form}{_esc(away['name'])}</div>
     </div>
     <div class="confidence">
