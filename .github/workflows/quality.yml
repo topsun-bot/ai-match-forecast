@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Controlled acceptance failure
+        run: exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -37,7 +39,7 @@ jobs:
           done
 
   tests:
-    if: ${{ false }} # Controlled acceptance fault: required tests must not be skipped.
+    needs: lint # Controlled fault: skipped when the upstream lint job fails.
     name: tests (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
