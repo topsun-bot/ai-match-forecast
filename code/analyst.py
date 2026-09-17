@@ -7,6 +7,7 @@ mock 模式下不调用模型，直接生成结构化样刊数据。
 """
 import json
 import re
+from urllib.parse import urlsplit
 from llm_router import LLMRouter
 from data_provider import get_matches
 
@@ -164,7 +165,7 @@ def _mock_synthesis(home, away, ph, pa, winner, conf):
 
 # ===== v2：Gemini Google Search grounding 当日全量分析 =====
 
-def analyze_daily(date_str, router: LLMRouter, mock_data=False):
+def analyze_daily(date_str, router: LLMRouter, mock_data=False, strict=False):
     """当日全量分析主入口。返回 (results, citations)：
     - results: [{"match":..., "analysis":...}, ...]
     - citations: grounding 全局来源 [{"uri","title"}, ...]
@@ -172,18 +173,22 @@ def analyze_daily(date_str, router: LLMRouter, mock_data=False):
     真实路径：Gemini 用 google_search 搜 2026 世界杯当日赛程 + 分析（赛程也由 Gemini 搜，
     不再依赖 API-Football）。mock_data 或 router.mock 时降级为世界杯样例 + 单场分析。
     """
+    if strict and (mock_data or router.mock):
+        raise ValueError("严格发布模式不接受 mock 数据或 mock 模型")
     if mock_data or router.mock:
         matches = get_matches(date_str, mock=True)
         return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
     try:
-        return _grounding_analyze_daily(date_str, router)
+        return _grounding_analyze_daily(date_str, router, strict=strict)
     except Exception as e:
+        if strict:
+            raise RuntimeError("真实数据分析失败，严格发布模式禁止回退样例") from e
         print(f"⚠ Gemini grounding 失败：{e}，降级世界杯样例。")
         matches = get_matches(date_str, mock=True)
         return [{"match": m, "analysis": analyze(m, router)} for m in matches], []
 
 
-def _grounding_analyze_daily(date_str, router):
+def _grounding_analyze_daily(date_str, router, strict=False):
     sys_prompt = (
         "你是《全球智库AI赛事预测日报》首席分析师，读者是投资人。"
         "你会用 Google 搜索工具实时查证 2026 年 FIFA 世界杯（美加墨）赛事信息，"
@@ -194,9 +199,13 @@ def _grounding_analyze_daily(date_str, router):
          {"role": "user", "content": _build_daily_prompt(date_str)}],
         temperature=0.5, max_tokens=8000,
     )
-    results = _parse_daily(resp["text"], date_str)
+    results = _parse_daily(resp["text"], date_str, strict=strict)
     if not results:
+        if resp["text"].strip() == "今日休赛":
+            return [], resp["citations"]
         raise RuntimeError("未能从 Gemini 输出解析出任何比赛")
+    if strict and not any(_is_web_source(c.get("uri")) for c in resp.get("citations", []) if isinstance(c, dict)):
+        raise ValueError("真实发布缺少可追溯的 HTTP(S) 来源")
     return results, resp["citations"]
 
 
@@ -232,18 +241,52 @@ def _build_daily_prompt(date_str):
     )
 
 
-def _parse_daily(text, date_str):
+def _parse_daily(text, date_str, strict=False):
     results = []
+    if strict and text and "今日休赛" in text and text.strip() != "今日休赛":
+        raise ValueError("休赛声明与其他内容混合，不能自动发布")
     if not text or "今日休赛" in text:
         return []
-    blocks = re.split(r"^===\s*$", text, flags=re.MULTILINE)
+    blocks = re.split(r"^={3,}\s*$", text, flags=re.MULTILINE)
     for blk in blocks:
+        if not blk.strip():
+            continue
         f = _extract_fields(blk)
+        if strict:
+            _validate_live_fields(f)
         if not f.get("主队") or not f.get("客队"):
             continue
         results.append({"match": _build_match_from_fields(f, date_str),
                         "analysis": _build_analysis_from_fields(f)})
     return results
+
+
+def _is_web_source(uri):
+    if not isinstance(uri, str):
+        return False
+    try:
+        parsed = urlsplit(uri)
+        return parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc)
+    except ValueError:
+        return False
+
+
+def _validate_live_fields(fields):
+    required = {"赛事", "主队", "客队", "比分", "胜负", "置信", "推理", "球评"}
+    missing = sorted(key for key in required if not fields.get(key, "").strip())
+    if missing:
+        raise ValueError("真实报告缺少字段：" + "、".join(missing))
+    if fields["主队"] == fields["客队"]:
+        raise ValueError("主客队不能相同")
+    score = re.fullmatch(r"(\d+)\s*[-–—]\s*(\d+)", fields["比分"])
+    if not score:
+        raise ValueError("比分必须是两个非负整数，禁止以默认比分替代")
+    if not re.fullmatch(r"(?:100|[0-9]{1,2})%?", fields["置信"]):
+        raise ValueError("置信度必须是 0—100 的整数")
+    home, away = (int(value) for value in score.groups())
+    expected = "主队胜" if home > away else ("客队胜" if away > home else "平局")
+    if fields["胜负"] != expected:
+        raise ValueError("胜负标签必须与预测比分一致")
 
 
 def _extract_fields(blk):
