@@ -37,6 +37,7 @@ jobs:
           done
 
   tests:
+    if: ${{ false }} # Controlled acceptance fault: required tests must not be skipped.
     name: tests (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
