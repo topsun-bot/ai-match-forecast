@@ -2,53 +2,110 @@ name: 每日赛事预测日报
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # UTC 00:00 = 北京 08:00
-    - cron: '0 12 * * *'  # UTC 12:00 = 北京 20:00
+    - cron: '0 0 * * *'
+    - cron: '0 12 * * *'
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       mock:
-        description: '用 mock 样例（不调 Gemini，先验链路）'
+        description: '离线验证生成链路，只保存样例 artifact，不发布或归档'
         required: false
         default: false
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: daily-forecast
+  group: daily-forecast-pages
   cancel-in-progress: false
 
 jobs:
   build:
+    # Never run privileged generation/publication from an arbitrary branch.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # Only used to preserve HTML history on site-content.
     steps:
-      - name: 检出仓库
-        uses: actions/checkout@v4
-
-      - name: 装 Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.11'
-
-      - name: 生成日报（Gemini Google Search 接地 / 或 mock）
+      - name: Generate offline sample (never publish)
+        if: github.event_name == 'workflow_dispatch' && inputs.mock
+        working-directory: code
+        env:
+          LLM_MOCK: '1'
+        run: python3 generate_report.py --mock-data --mock-llm --no-open
+      - name: Generate live report
+        if: github.event_name != 'push' && !inputs.mock
         working-directory: code
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ "${{ inputs.mock }}" = "true" ]; then
-            python3 generate_report.py --model gemini-2.5-pro --mock-data --mock-llm --no-open
-          else
-            python3 generate_report.py --model gemini-2.5-pro --no-mock-data --no-open
-          fi
-
-      - name: 同步到仓库根 + 刷新首页
-        run: python3 code/publish_site.py --site-dir .
-
-      - name: 提交并推送
+          test -n "$GEMINI_API_KEY" || { echo 'GEMINI_API_KEY is missing; live publication stopped.' >&2; exit 1; }
+          python3 generate_report.py --model gemini-2.5-pro --no-mock-data --no-open
+      - name: Read existing report archive
+        id: history
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "自动更新日报 $(date -u +%Y-%m-%d)" || echo "无新改动，跳过推送"
-          git push
+          history="$RUNNER_TEMP/report-history"
+          if git ls-remote --exit-code --heads origin refs/heads/site-content; then
+            git fetch --no-tags origin site-content
+            git worktree add --detach "$history" FETCH_HEAD
+          else
+            status=$?
+            if [ "$status" -ne 2 ]; then exit "$status"; fi
+            git init --initial-branch=site-content "$history"
+          fi
+          echo "path=$history" >> "$GITHUB_OUTPUT"
+      - name: Build public HTML only
+        env:
+          HISTORY_PATH: ${{ steps.history.outputs.path }}
+        run: python3 scripts/build_site.py --archive "$HISTORY_PATH" --out _site
+      - name: Preserve HTML history without changing source main
+        if: ${{ !inputs.mock }}
+        env:
+          HISTORY_PATH: ${{ steps.history.outputs.path }}
+        shell: bash
+        run: |
+          cp _site/.nojekyll _site/index.html _site/日报-*.html "$HISTORY_PATH/"
+          git -C "$HISTORY_PATH" config user.name 'github-actions[bot]'
+          git -C "$HISTORY_PATH" config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C "$HISTORY_PATH" add -- .nojekyll index.html '日报-*.html'
+          if ! git -C "$HISTORY_PATH" diff --cached --quiet; then
+            git -C "$HISTORY_PATH" commit -m "Archive published reports (run $GITHUB_RUN_ID)"
+            git fetch "$HISTORY_PATH" HEAD
+            git push origin FETCH_HEAD:refs/heads/site-content
+          fi
+      - name: Upload offline preview
+        if: inputs.mock
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mock-report-preview
+          path: _site/
+          retention-days: 7
+      - name: Upload Pages artifact
+        if: ${{ !inputs.mock }}
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: _site/
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && !inputs.mock
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy public reports
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
