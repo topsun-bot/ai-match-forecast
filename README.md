@@ -1,16 +1,23 @@
 # 全球智库AI赛事预测日报 · GitHub Pages 站点 + 源代码
 
+[![Pages](https://img.shields.io/badge/GitHub%20Pages-live-2ea44f)](https://topsun-bot.github.io/ai-match-forecast/)
+[![CI](https://img.shields.io/badge/CI-quality-586069?logo=githubactions&logoColor=white)](.github/workflows/quality.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
+
+[部署配置](#部署配置) · [目录结构](#目录结构) · [更新流程](#更新流程) · [本地预览](#本地预览) · [免责声明](#免责声明)
+
 本仓库托管两样东西：
+
 1. **《全球智库AI赛事预测日报》公开站点**（GitHub Pages，根目录）
 2. **生成器源代码**（`code/` 子目录）
 
 ## 部署配置
 
 | 项 | 值 |
-|---|---|
+| --- | --- |
 | 平台 | GitHub Pages（纯静态，无 Jekyll，根目录有 `.nojekyll`） |
-| 生产地址 | https://topsun-bot.github.io/ai-match-forecast/ |
-| 仓库地址 | https://github.com/topsun-bot/ai-match-forecast |
+| 生产地址 | [topsun-bot.github.io/ai-match-forecast](https://topsun-bot.github.io/ai-match-forecast/) |
+| 仓库地址 | [topsun-bot/ai-match-forecast](https://github.com/topsun-bot/ai-match-forecast) |
 | 部署触发 | 迁移后使用 Pages Actions：main 合并后重建站点；定时任务生成并自动发布日报 |
 | 健康检查 | 访问生产地址，首页列出日报即为正常 |
 | 合并方式 | 工作分支提交 PR；必要检查和非作者审查通过后合并 |
@@ -18,7 +25,7 @@
 
 ## 目录结构
 
-```
+```text
 ai-match-forecast-site/  (仓库根，GitHub Pages 从这里 serve)
 ├── index.html              # 报告站首页（深蓝金色，自动列出日报）
 ├── 日报-YYYY-MM-DD.html     # 每日报告（自包含，CSS 内联）
